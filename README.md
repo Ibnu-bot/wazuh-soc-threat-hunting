@@ -22,6 +22,34 @@
 
 </details>
 
+
+<details>
+<summary><b>🔍 Quest 2: Anomalous Successful Login Analysis</b></summary>
+
+## 📌 Deskripsi Kasus
+Terdeteksi keberhasilan autentikasi masuk (*Accepted password*) ke akun administrator (`root`) via SSH dari lokasi geolokasi tidak biasa (Ashburn, Amerika Serikat) pada server `jida-wazuh-manager`.
+
+📊 Analisis 5W + 1
+HWHAT: Autentikasi SSH berhasil (sshd: authentication success) menggunakan kata sandi (Accepted password).
+WHO:Attacker/Actor: IP 52.200.44.199 (AWS Data Center - Ashburn, United States)Target Account: root
+WHEN: 21 September 2026 @ 23:37:37 WIB (Event System Time: Sep 21 16:37:36 UTC)
+WHERE: Agent jida-wazuh-manager (agent.id: 000)
+WHY: Akun paling krusial (root) berhasil diakses dari IP publik AS (Ashburn, VA) yang tidak terdaftar dalam jangkauan IP operasional tim internal, mengindikasikan adanya pencurian kredensial (Compromised Credentials).
+HOW: Aktor menggunakan kredensial root yang valid via layanan SSH (Port 60328) untuk mendapatkan akses langsung ke sistem.
+
+🛡️️ Rekomendasi Mitigasi
+Isolasi Sesi & Reset Kredensial:
+- Segera putuskan sesi SSH yang sedang aktif dari IP 52.200.44.199 (pkill -9 -u root atau menggunakan ss).
+- Ganti kata sandi root secara mendesak.
+  
+Penguatan Otentikasi (Hardening):
+- Matikan fitur login root langsung melalui file /etc/ssh/sshd_config (PermitRootLogin no).
+- Wajibkan penggunaan Multi-Factor Authentication (MFA) atau SSH Key-Based Authentication dengan passphrase.
+Pembatasan Jaringan (Network Restriction):
+Batasi akses port SSH (22) hanya dari segmen IP internal / VPN resmi menggunakan firewall (ufw / iptables).
+
+</details>
+
 <details>
 <summary><b>🔍 Quest 3: Off-Hours Account & Group Creation Analysis</b></summary>
 📌 Deskripsi Kasus
@@ -43,3 +71,5 @@ Terdeteksi aktivitas pembuatan grup baru (maintenance-account) dan dilanjutkan d
 2. Isolasi / Hapus Akun Mencurigakan:
    Jika aktivitas ini tidak terotorisasi, segera kunci dan hapus akun beserta direktori home-nya
    menggunakan perintah:
+
+
