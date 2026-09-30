@@ -21,3 +21,25 @@
 3. Wajibkan penggunaan SSH Key-Based Authentication.
 
 </details>
+
+<details>
+<summary><b>🔍 Quest 3: Off-Hours Account & Group Creation Analysis</b></summary>
+📌 Deskripsi Kasus
+Terdeteksi aktivitas pembuatan grup baru (maintenance-account) dan dilanjutkan dengan pembuatan akun pengguna baru (maintenance-account) pada sistem Linux di luar jam kerja/operasional normal (pukul 23:09 WIB) tanpa adanya Change Request resmi.
+
+📊 Analisis 5W + 1H
+- What: Eksekusi penambahan grup sistem baru (groupadd) dan akun pengguna baru (useradd) yang memicu alert Wazuh Level 8.
+- Who:Target/Akun Baru: maintenance-account (UID: 1003, GID: 1003)Sesi Eksekusi: Sesi terminal interaktif /dev/pts/1
+- When: 17 September 2026, 23:09:38 WIB (Event Log Time: Sep 17 16:09:37 UTC)
+- Where: Agent ip-172-31-15-17 (agent.id: 002 | IP Internal: 172.31.15.17)
+- Why: Penambahan akun dilakukan di malam hari (pukul 23:09 WIB) di luar jam kerja operasional resmi tanpa dokumentasi tiket perubahan yang terdaftar, mengindikasikan upaya pembentukan jalur Persistence (akses bertahan) oleh penyerang.
+- How: Penyerang memanfaatkan akses terminal interaktif (/dev/pts/1) dengan hak akses administrator/root untuk mengeksekusi biner groupadd diikuti biner useradd.
+
+🛡️ Rekomendasi Mitigasi
+1. Konfirmasi & Verifikasi Otentisitas:
+   Periksa dengan tim internal IT Operations apakah ada jadwal pemeliharaan khusus pada jam 23:09
+   WIB tersebut.
+
+2. Isolasi / Hapus Akun Mencurigakan:
+   Jika aktivitas ini tidak terotorisasi, segera kunci dan hapus akun beserta direktori home-nya
+   menggunakan perintah:
